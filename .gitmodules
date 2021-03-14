@@ -1,6 +1,0 @@
-[submodule "Binance.Net"]
-	path = Binance.Net
-	url = https://github.com/JKorf/Binance.Net.git
-[submodule "Stock.Indicators"]
-	path = Stock.Indicators
-	url = https://github.com/DaveSkender/Stock.Indicators.git
