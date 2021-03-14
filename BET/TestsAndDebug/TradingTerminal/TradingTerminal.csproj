@@ -242,16 +242,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Binance.Net\Binance.Net\Binance.Net.csproj">
-      <Project>{dd7844d2-35e9-44de-9af2-6cc8a6529864}</Project>
-      <Name>Binance.Net</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Stock.Indicators\indicators\Indicators.csproj">
-      <Project>{39a76c3e-98c5-4f40-b8e8-d054aa78ddd3}</Project>
-      <Name>Indicators</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
