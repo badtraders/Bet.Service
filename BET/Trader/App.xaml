@@ -1,0 +1,58 @@
+﻿<prism:PrismApplication x:Class="Trader.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Trader"
+             xmlns:converters="clr-namespace:Trader.Converters"
+             xmlns:prism="http://prismlibrary.com/"
+            >
+    <Application.Resources>
+
+        <Style TargetType="Window">
+            <!--<Setter Property="Background" Value="#12161c" />-->
+        </Style>
+        <Style TargetType="Grid" x:Key="Panel">
+            <!--<Setter Property="Background" Value="#1e2026" />-->
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+        </Style>
+        <Style TargetType="GridSplitter">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Width" Value="6" />
+            <Setter Property="ShowsPreview" Value="True" />
+            <!--<Setter Property="Background" Value="Transparent" />-->
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <!--<Setter Property="Foreground" Value="#fff" />
+            <Setter Property="Background" Value="Transparent" />-->
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <!--<Setter Property="Foreground" Value="#fff" />-->
+            <!--<Setter Property="Background" Value="Transparent" />-->
+        </Style>
+
+        <Style TargetType="ListView">
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        </Style>
+
+        <Style TargetType="ListViewItem" x:Key="ListViewItemBaseStyle">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+
+        <converters:TimeLeftConverter x:Key="TimeLeftConverter" />
+        <converters:StringConcatenationMultiConverter x:Key="StringConcatenationMultiConverter" />
+        <converters:SignToBrushConverter x:Key="SignToBrushConverter" />
+        <converters:BuyerIsMakerConverter x:Key="BuyerIsMakerConverter" />
+        <converters:DataTypeToAlignmentConverter x:Key="DataTypeToAlignmentConverter" />
+    </Application.Resources>
+</prism:PrismApplication>

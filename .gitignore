@@ -6,7 +6,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-binance.key
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -231,8 +230,3 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
-/BET/BET.Samples
-/BET/BET.Shared
-/BET/Trader
-/BET/WebApplication1
-/BET/BET.zip
