@@ -20,12 +20,9 @@ namespace Trader.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private readonly IEventAggregator _ea;
-        public MainWindowViewModel(ITerminal terminal, IEventAggregator eventAggregator)
-        {
-            _ea = eventAggregator;
+        public MainWindowViewModel(ITerminal terminal) =>
             MainTerminal = terminal;
-        }
+            //_ea = eventAggregator;
 
         #region Properties
 
@@ -33,8 +30,8 @@ namespace Trader.ViewModels
         private bool _isBusy;
         public bool IsBusy
         {
-            get { return _isBusy; }
-            set { SetProperty(ref _isBusy, value); }
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
         }
 
         public ITerminal MainTerminal { get; }
@@ -43,15 +40,9 @@ namespace Trader.ViewModels
 
         #region Commands
 
-        public DelegateCommand LoadedCommand => new DelegateCommand(async () =>
-        {
-            MainTerminal.Playing = true;
-        });
+        public DelegateCommand LoadedCommand => new(() => MainTerminal.Playing = true);
 
-        public DelegateCommand UnloadedCommand => new DelegateCommand(() =>
-        {
-            MainTerminal.Playing = false;
-        });
+        public DelegateCommand UnloadedCommand => new(() => MainTerminal.Playing = false);
 
         #endregion
 

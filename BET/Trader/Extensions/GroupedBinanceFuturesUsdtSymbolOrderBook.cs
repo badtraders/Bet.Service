@@ -112,8 +112,8 @@ namespace Trader.Extensions
             }
         }
 
-        public ObservableCollectionExtension<GroupedOrderBookEntry> GroupedAsks { get; private set; } = new ObservableCollectionExtension<GroupedOrderBookEntry>(ObservableCollectionExtension<GroupedOrderBookEntry>.ObservableCollectionExtensionType.Reversed);
-        public ObservableCollectionExtension<GroupedOrderBookEntry> GroupedBids { get; private set; } = new ObservableCollectionExtension<GroupedOrderBookEntry>( ObservableCollectionExtension<GroupedOrderBookEntry>.ObservableCollectionExtensionType.List);
+        public ObservableCollectionExtension<GroupedOrderBookEntry> GroupedAsks { get; private set; } = new ObservableCollectionExtension<GroupedOrderBookEntry>(ObservableCollectionExtensionType.Reversed);
+        public ObservableCollectionExtension<GroupedOrderBookEntry> GroupedBids { get; private set; } = new ObservableCollectionExtension<GroupedOrderBookEntry>(ObservableCollectionExtensionType.List);
 
         public decimal GroupKey(decimal number, bool bid) => bid ? ((int)Math.Floor(number / GroupingInterval)) * GroupingInterval : ((int)Math.Ceiling(number / GroupingInterval)) * GroupingInterval;
 
