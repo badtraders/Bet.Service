@@ -16,7 +16,9 @@
         </MultiBinding>
     </Window.Title>
     <Window.Resources>
-
+        <Style x:Key="CleanSeparatorStyle" TargetType="lvc:Separator">
+            <Setter Property="IsEnabled" Value="False"></Setter>
+        </Style>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -49,7 +51,7 @@
                 </Style>
             </StackPanel.Resources>
             <ComboBox ItemsSource="{Binding MainTerminal.MarketAssets}" SelectedItem="{Binding MainTerminal.Asset}" MaxDropDownHeight="1000">
-                
+
                 <ComboBox.ItemContainerStyle>
                     <Style TargetType="ComboBoxItem">
                         <Setter Property="MinWidth" Value="260"/>
@@ -143,7 +145,7 @@
                 <TextBlock Text="OpenInterest" />
                 <TextBlock Text="{Binding MainTerminal.AssetOpenInterestData.OpenInterest, StringFormat=N2}" />
             </StackPanel>
-           
+
         </StackPanel>
 
         <!-- State -->
@@ -348,10 +350,11 @@
         <!-- Chart, TI -->
 
         <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
-            <StackPanel Orientation="Vertical" Background="LightCoral">
+            <StackPanel Orientation="Vertical" Background="LightGray">
                 <StackPanel.Resources>
                     <Style TargetType="StackPanel">
                         <Setter Property="Margin" Value="10" />
+                        <Setter Property="Background" Value="White" />
                     </Style>
                     <Style TargetType="Label">
                         <Setter Property="FontSize" Value="16" />
@@ -361,7 +364,7 @@
 
 
                 <!-- Price 24h: Min, Current, Max -->
-                <StackPanel Orientation="Vertical" Background="LightPink">
+                <StackPanel Orientation="Vertical">
                     <Label Content="Price 24h: Min, Current, Max" />
                     <lvc:Gauge From="{Binding MainTerminal.AssetTickerData.LowPrice}" 
                            To="{Binding MainTerminal.AssetTickerData.HighPrice}" 
@@ -371,7 +374,7 @@
                 </StackPanel>
 
                 <!-- LongShort Ratios-->
-                <StackPanel Orientation="Vertical" Background="LightPink">
+                <StackPanel Orientation="Vertical">
                     <Label Content="GlobalLongShortAccountRatioLatestData" />
                     <lvc:Gauge From="0" To="1" GaugeActiveFill="Green" GaugeBackground="Red" 
                            Value="{Binding MainTerminal.GlobalLongShortAccountRatioLatestData.LongAccount}" 
@@ -395,21 +398,23 @@
                 </StackPanel>
 
                 <!-- Price 24h: Min, Current, Max -->
-                <StackPanel Orientation="Vertical" Background="LightPink">
+                <StackPanel Orientation="Vertical">
                     <Label Content="Klines" />
-                    <lvc:CartesianChart  LegendLocation="None" Height="500" >
-                        <lvc:CartesianChart.Series>
-                            <lvc:OhlcSeries 
-                                
-                                Values="{Binding MainTerminal.AssetKlinesDataChart}" IncreaseBrush="Blue" DecreaseBrush="Red" Stroke="Yellow" Fill="Green" StrokeThickness="2"  />
-
-
-                        </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart Series="{Binding KlinesChartSeries}"  LegendLocation="None" Height="500" >
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="Price"></lvc:Axis>
+                            <lvc:Axis MaxValue="{Binding KlinesChartMaxVolume}" ShowLabels="False" Title="">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
                         </lvc:CartesianChart.AxisY>
                         <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="Date"   ></lvc:Axis>
+                            <lvc:Axis Title="Date" >
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
                         </lvc:CartesianChart.AxisX>
                     </lvc:CartesianChart>
                 </StackPanel>

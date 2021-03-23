@@ -134,10 +134,7 @@ namespace Trader.Services
                 AssetKlinesData.ReplaceOrAdd(kline, (item) => item.OpenTime == kline.OpenTime);
                 AssetLatestDataUpdate = DateTime.UtcNow;
 
-                if (AssetKlinesDataChart.Count > 0 && AssetKlinesDataChart[^1].OpenTime == kline.OpenTime)
-                    AssetKlinesDataChart[^1] = kline;
-                else
-                    AssetKlinesDataChart.Add(kline);
+            
 
             });
 
@@ -174,8 +171,7 @@ namespace Trader.Services
                     AssetKlinesData.AddRange(response.Data);
                     AssetLatestDataUpdate = DateTime.UtcNow;
 
-                    AssetKlinesDataChart.Clear();
-                    AssetKlinesDataChart.AddRange(response.Data);
+                  
                 }
                 else
                 {
@@ -300,7 +296,6 @@ namespace Trader.Services
         public ObservableCollectionExtension<BinanceFuturesStreamLiquidation> AssetLiquidationsData { get; } = new ObservableCollectionExtension<BinanceFuturesStreamLiquidation>(ObservableCollectionExtensionType.Reversed, 100);
 
         public ObservableCollectionExtension<IBinanceKline> AssetKlinesData { get; } = new ObservableCollectionExtension<IBinanceKline>(ObservableCollectionExtensionType.List);
-        public LiveCharts.ChartValues<IBinanceKline> AssetKlinesDataChart { get; } = new ();
         
         public IEnumerable<BinanceFuturesLongShortRatio> GlobalLongShortAccountRatioHistoryData
         {
