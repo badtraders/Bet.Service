@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 
 namespace Trader.Extensions
 {
+    public enum ObservableCollectionExtensionType
+    {
+        List,
+        Reversed
+    }
+
     public class ObservableCollectionExtension<T> : ObservableCollection<T>
     {
 
-        public enum ObservableCollectionExtensionType
-        {
-            List,
-            Reversed
-        }
+
         public int Capacity { get; private set; }
         public ObservableCollectionExtensionType Type { get; private set; }
 

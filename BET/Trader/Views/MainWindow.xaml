@@ -4,19 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+        xmlns:sys="clr-namespace:System;assembly=System.Core"
         xmlns:prism="http://prismlibrary.com/"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"  xmlns:extensions="clr-namespace:Trader.Extensions"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"  xmlns:extensions="clr-namespace:Trader.Extensions" xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Height="1000" Width="1200" Left="100" Top="50" WindowState="Maximized"
        >
     <Window.Title>
         <MultiBinding StringFormat="{}{0} - {1:C2}">
             <Binding Path="MainTerminal.Asset.Name"/>
-            <Binding Path="MainTerminal.LastTradePrice" />
+            <Binding Path="MainTerminal.AssetLatestPrice" />
         </MultiBinding>
     </Window.Title>
     <Window.Resources>
-
+        <Style x:Key="CleanSeparatorStyle" TargetType="lvc:Separator">
+            <Setter Property="IsEnabled" Value="False"></Setter>
+        </Style>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -48,8 +51,8 @@
                     <Setter Property="MinWidth" Value="50" />
                 </Style>
             </StackPanel.Resources>
-            <ComboBox ItemsSource="{Binding MainTerminal.Assets}" SelectedItem="{Binding MainTerminal.Asset}" MaxDropDownHeight="1000">
-                
+            <ComboBox ItemsSource="{Binding MainTerminal.MarketAssets}" SelectedItem="{Binding MainTerminal.Asset}" MaxDropDownHeight="1000">
+
                 <ComboBox.ItemContainerStyle>
                     <Style TargetType="ComboBoxItem">
                         <Setter Property="MinWidth" Value="260"/>
@@ -84,80 +87,67 @@
                 </ListView.View>
             </ListView>-->
             <StackPanel>
-                <Label Content="{Binding MainTerminal.SymbolTickerData.LastPrice, StringFormat=C2}" Foreground="{Binding MainTerminal.AssetRecentTradeData.BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}" />
+                <Label Content="{Binding MainTerminal.AssetTickerData.LastPrice, StringFormat=C2}" Foreground="{Binding MainTerminal.AssetLatestTradeData.BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Маркировка" />
-                <TextBlock Text="{Binding MainTerminal.MarkPriceData.MarkPrice, StringFormat=C2}" />
+                <TextBlock Text="{Binding MainTerminal.AssetMarkPriceData.MarkPrice, StringFormat=C2}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Индекс" />
-                <TextBlock Text="{Binding MainTerminal.MarkPriceData.IndexPrice, StringFormat=C2}" />
+                <TextBlock Text="{Binding MainTerminal.AssetMarkPriceData.IndexPrice, StringFormat=C2}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Ставка" />
-                <TextBlock Text="{Binding MainTerminal.MarkPriceData.FundingRate, StringFormat=P4}" />
+                <TextBlock Text="{Binding MainTerminal.AssetMarkPriceData.FundingRate, StringFormat=P4}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Осталось" />
-                <TextBlock Text="{Binding MainTerminal.MarkPriceData.NextFundingTime, StringFormat='hh\\:mm\\:ss', Converter={StaticResource TimeLeftConverter}}" />
+                <TextBlock Text="{Binding MainTerminal.AssetMarkPriceData.NextFundingTime, StringFormat='hh\\:mm\\:ss', Converter={StaticResource TimeLeftConverter}}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Изменение 24h" />
                 <StackPanel Orientation="Horizontal"  Margin="0">
-                    <TextBlock Text="{Binding MainTerminal.SymbolTickerData.PriceChange, StringFormat=C2}" Foreground="{Binding MainTerminal.SymbolTickerData.PriceChangePercent, Converter={StaticResource SignToBrushConverter}}" />
-                    <TextBlock Text="{Binding MainTerminal.SymbolTickerData.PriceChangePercent, StringFormat=' {0:+0.00;-0.00;0}%'}"  Foreground="{Binding MainTerminal.SymbolTickerData.PriceChangePercent, Converter={StaticResource SignToBrushConverter}}" />
+                    <TextBlock Text="{Binding MainTerminal.AssetTickerData.PriceChange, StringFormat=C2}" Foreground="{Binding MainTerminal.AssetTickerData.PriceChangePercent, Converter={StaticResource SignToBrushConverter}}" />
+                    <TextBlock Text="{Binding MainTerminal.AssetTickerData.PriceChangePercent, StringFormat=' {0:+0.00;-0.00;0}%'}"  Foreground="{Binding MainTerminal.AssetTickerData.PriceChangePercent, Converter={StaticResource SignToBrushConverter}}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="MAX 24h" />
-                <TextBlock Text="{Binding MainTerminal.SymbolTickerData.HighPrice, StringFormat=C2}" />
+                <TextBlock Text="{Binding MainTerminal.AssetTickerData.HighPrice, StringFormat=C2}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="MIN 24h" />
-                <TextBlock Text="{Binding MainTerminal.SymbolTickerData.LowPrice, StringFormat=C2}" />
+                <TextBlock Text="{Binding MainTerminal.AssetTickerData.LowPrice, StringFormat=C2}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Base Volume 24h" />
-                <TextBlock Text="{Binding MainTerminal.SymbolTickerData.BaseVolume, StringFormat=N0}" />
+                <TextBlock Text="{Binding MainTerminal.AssetTickerData.BaseVolume, StringFormat=N0}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Quote Volume 24h" />
-                <TextBlock Text="{Binding MainTerminal.SymbolTickerData.QuoteVolume, StringFormat=C0}" />
+                <TextBlock Text="{Binding MainTerminal.AssetTickerData.QuoteVolume, StringFormat=C0}" />
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Weighted 24h" />
-                <TextBlock Text="{Binding MainTerminal.SymbolTickerData.WeightedAveragePrice, StringFormat=C2}" />
+                <TextBlock Text="{Binding MainTerminal.AssetTickerData.WeightedAveragePrice, StringFormat=C2}" />
             </StackPanel>
 
             <StackPanel>
                 <TextBlock Text="Last Trade" />
                 <StackPanel Orientation="Horizontal" Margin="0">
-                    <TextBlock Text="{Binding MainTerminal.AssetRecentTradeData.Price, StringFormat=C2}" Foreground="{Binding MainTerminal.AssetRecentTradeData.BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}"  />
+                    <TextBlock Text="{Binding MainTerminal.AssetLatestTradeData.Price, StringFormat=C2}" Foreground="{Binding MainTerminal.AssetLatestTradeData.BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}"  />
                     <TextBlock Text=" x " />
-                    <TextBlock Text="{Binding MainTerminal.AssetRecentTradeData.Quantity, StringFormat=N4}" Foreground="{Binding MainTerminal.AssetRecentTradeData.BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}"  />
+                    <TextBlock Text="{Binding MainTerminal.AssetLatestTradeData.Quantity, StringFormat=N4}" Foreground="{Binding MainTerminal.AssetLatestTradeData.BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}"  />
                 </StackPanel>
             </StackPanel>
 
             <StackPanel>
                 <TextBlock Text="OpenInterest" />
-                <TextBlock Text="{Binding MainTerminal.OpenInterestData.OpenInterest, StringFormat=N2}" />
+                <TextBlock Text="{Binding MainTerminal.AssetOpenInterestData.OpenInterest, StringFormat=N2}" />
             </StackPanel>
-            <StackPanel>
-                <TextBlock Text="OpenInterest" />
-                <TextBlock Text="{Binding MainTerminal.OpenInterestData.OpenInterest, StringFormat=N2}" />
-            </StackPanel>
-        </StackPanel>
 
-        <!-- Chart, TI -->
-        <Grid Style="{StaticResource Panel}" Grid.Column="0" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" MinHeight="20"/>
-                <RowDefinition Height="Auto" MinHeight="400"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="CHART PREFS" />
-        </Grid>
+        </StackPanel>
 
         <!-- State -->
         <Grid Style="{StaticResource Panel}" Grid.Column="1" Grid.Row="1">
@@ -198,7 +188,7 @@
 
 
                         <!--Asset Trades-->
-                        <ListView Grid.Row="1" ItemsSource="{Binding MainTerminal.AssetRecentTradesData}">
+                        <ListView Grid.Row="1" ItemsSource="{Binding MainTerminal.AssetLatestTradesData}">
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem" BasedOn="{StaticResource ListViewItemBaseStyle}">
                                     <Setter Property="Foreground" Value="{Binding BuyerIsMaker, Converter={StaticResource BuyerIsMakerConverter}}" />
@@ -259,7 +249,7 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="Orders">
-                    <!--Asset OrderBook-->
+                    <!--Asset AssetOrderBook-->
                     <StackPanel Grid.Row="0" Background="#181a20">
                         <StackPanel.Resources>
                             <Style TargetType="Label" x:Key="LabelBase">
@@ -288,10 +278,10 @@
                                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                             </Style>
                         </StackPanel.Resources>
-                        <Label Content="{Binding MainTerminal.OrderBook.Status}" Background="Black" Foreground="White" />
-                        <Label Content="{Binding MainTerminal.OrderBook.LastOrderBookUpdate, StringFormat='s'}" Background="Black" Foreground="White" />
+                        <Label Content="{Binding MainTerminal.AssetOrderBook.Status}" Background="Black" Foreground="White" />
+                        <Label Content="{Binding MainTerminal.AssetOrderBook.LastOrderBookUpdate, StringFormat='s'}" Background="Black" Foreground="White" />
 
-                        <ItemsControl ItemsSource="{Binding MainTerminal.OrderBook.GroupedAsks}">
+                        <ItemsControl ItemsSource="{Binding MainTerminal.AssetOrderBook.GroupedAsks}">
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -316,8 +306,8 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0"  Content="{Binding MainTerminal.OrderBook.BestAsk.Price, StringFormat=C2}" Style="{StaticResource AskPriceLabel}" />
-                            <Label Grid.Column="1"  Content="{Binding MainTerminal.OrderBook.BestAsk.Quantity, StringFormat=N2}"  Style="{StaticResource LabelBase}" />
+                            <Label Grid.Column="0"  Content="{Binding MainTerminal.AssetOrderBook.BestAsk.Price, StringFormat=C2}" Style="{StaticResource AskPriceLabel}" />
+                            <Label Grid.Column="1"  Content="{Binding MainTerminal.AssetOrderBook.BestAsk.Quantity, StringFormat=N2}"  Style="{StaticResource LabelBase}" />
                         </Grid>
 
                         <Grid  Background="#200ecb81">
@@ -326,11 +316,11 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0"  Content="{Binding MainTerminal.OrderBook.BestBid.Price, StringFormat=C2}" Style="{StaticResource BidPriceLabel}"  />
-                            <Label Grid.Column="1"  Content="{Binding MainTerminal.OrderBook.BestBid.Quantity, StringFormat=N2}"  Style="{StaticResource LabelBase}" />
+                            <Label Grid.Column="0"  Content="{Binding MainTerminal.AssetOrderBook.BestBid.Price, StringFormat=C2}" Style="{StaticResource BidPriceLabel}"  />
+                            <Label Grid.Column="1"  Content="{Binding MainTerminal.AssetOrderBook.BestBid.Quantity, StringFormat=N2}"  Style="{StaticResource LabelBase}" />
                         </Grid>
 
-                        <ItemsControl ItemsSource="{Binding MainTerminal.OrderBook.GroupedBids}">
+                        <ItemsControl ItemsSource="{Binding MainTerminal.AssetOrderBook.GroupedBids}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -357,11 +347,90 @@
             </TabControl>
         </Grid>
 
-        <!-- Order Book -->
-        <!--<Grid Style="{StaticResource Panel}" Grid.Column="2" Grid.Row="1">
 
-            <TextBlock Text="Market State: STREAMS Order Book (MainTerminal?), Trades, Open Interest, Liq. Orders, LongShort Ratio, Streams " />
+        <!-- Chart, TI -->
+
+        <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1">
+            <StackPanel Orientation="Vertical" Background="LightGray">
+                <StackPanel.Resources>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Margin" Value="10" />
+                        <Setter Property="Background" Value="White" />
+                    </Style>
+                    <Style TargetType="Label">
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </StackPanel.Resources>
+
+
+                <!-- Price 24h: Min, Current, Max -->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Price 24h: Min, Current, Max" />
+                    <lvc:Gauge From="{Binding MainTerminal.AssetTickerData.LowPrice}" 
+                           To="{Binding MainTerminal.AssetTickerData.HighPrice}" 
+                           Value="{Binding MainTerminal.AssetTickerData.LastPrice}" 
+                           VerticalAlignment="Stretch" Height="160" Width="90"
+                            />
+                </StackPanel>
+
+                <!-- LongShort Ratios-->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="GlobalLongShortAccountRatioLatestData" />
+                    <lvc:Gauge From="0" To="1" GaugeActiveFill="Green" GaugeBackground="Red" 
+                           Value="{Binding MainTerminal.GlobalLongShortAccountRatioLatestData.LongAccount}" 
+                               LabelsVisibility="Collapsed"
+                           VerticalAlignment="Stretch" Height="160" Width="90"
+                            />
+
+                    <Label Content="TopLongShortAccountRatioLatestData" />
+                    <lvc:Gauge From="0" To="1" GaugeActiveFill="Green" GaugeBackground="Red" 
+                           Value="{Binding MainTerminal.TopLongShortAccountRatioLatestData.LongAccount}" 
+                               LabelsVisibility="Collapsed"
+                           VerticalAlignment="Stretch" Height="160" Width="90"
+                            />
+
+                    <Label Content="TopLongShortPositionRatioLatestData" />
+                    <lvc:Gauge From="0" To="1" GaugeActiveFill="Green" GaugeBackground="Red" 
+                           Value="{Binding MainTerminal.TopLongShortPositionRatioLatestData.LongAccount}" 
+                               LabelsVisibility="Collapsed"
+                           VerticalAlignment="Stretch" Height="160" Width="90"
+                            />
+                </StackPanel>
+
+                <!-- Price 24h: Min, Current, Max -->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Klines" />
+                    <lvc:CartesianChart Series="{Binding AssetKlinesChartSeries}"  LegendLocation="None" Height="500" >
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Price"></lvc:Axis>
+                            <lvc:Axis MaxValue="{Binding AssetKlinesChartMaxVolume}" ShowLabels="False" Title="">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:DateAxis Title="Date" Period="Hours" 
+                                          MinValue="{Binding AssetKlinesChartMinTime}" MaxValue="{Binding AssetKlinesChartMaxTime}">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:DateAxis>
+                        </lvc:CartesianChart.AxisX>
+                    </lvc:CartesianChart>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+        <!--<Grid Style="{StaticResource Panel}" Grid.Column="0" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="20"/>
+                <RowDefinition Height="Auto" MinHeight="400"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
         </Grid>-->
+
 
         <GridSplitter Grid.Row="1" Grid.Column="0" />
         <GridSplitter Grid.Row="1" Grid.Column="1" />
@@ -372,7 +441,7 @@
                 <TextBlock Text="{Binding MainTerminal.ExchangeDelay, StringFormat=ExchangeDelay {0:ss\\.fff}}"/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding MainTerminal.LastDataUpdate, StringFormat=LastDataUpdate {0:T}}"/>
+                <TextBlock Text="{Binding MainTerminal.AssetLatestDataUpdate, StringFormat=AssetLatestDataUpdate {0:T}}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

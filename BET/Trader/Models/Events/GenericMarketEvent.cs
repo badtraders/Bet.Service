@@ -19,11 +19,15 @@ namespace Trader.Models
     /// klines
     /// </summary>
     public class KlinesEvent : GenericMarketEvent<IEnumerable<IBinanceKline>> { }
-    
+
+    public class GlobalLongShortAccountRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesLongShortRatio>> { }
+    public class TopLongShortAccountRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesLongShortRatio>> { }
+    public class TopLongShortPositionRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesLongShortRatio>> { }
+
     /// <summary>
-    /// Asset Price changed: OnMarkPrice, OnTrade, OnOrderBookChanged
+    /// Asset Price changed: OnTrade => Price, OnOrderBookChanged => BestBid.Price
     /// </summary>
-    public class AssetTickEvent : GenericMarketEvent<(DateTime updated, double price)> { }
+    public class AssetTickEvent : GenericMarketEvent<(DateTime updated, decimal price)> { }
 
     /// <summary>
     /// SubscribeToSymbolTickerUpdatesAsync
