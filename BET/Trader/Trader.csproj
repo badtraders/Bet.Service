@@ -33,4 +33,8 @@
     </Page>
   </ItemGroup>
 
+  <PropertyGroup>
+    <AppConfig>App.$(Configuration).config</AppConfig>
+  </PropertyGroup>
+
 </Project>
