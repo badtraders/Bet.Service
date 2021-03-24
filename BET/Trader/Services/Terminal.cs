@@ -31,8 +31,6 @@ using Trader.Models.Bindables;
 
 namespace Trader.Services
 {
-
-
     public partial class Terminal : ExtendedBindableBase, ITerminal
     {
         private bool _inited;
@@ -46,6 +44,7 @@ namespace Trader.Services
 
         public Terminal(IEventAggregator eventAggregator, IMapper mapper) : base(eventAggregator, mapper)
         {
+            TimeFrame = TimeFramePreset.StandardTimeFramePresets[KlineInterval.FiveMinutes];
         }
 
         private bool _playing;
@@ -181,17 +180,12 @@ namespace Trader.Services
         }
 
 
-        public KlineInterval TimeFrame
+        public TimeFramePreset TimeFrame
         {
-            get => GetValue<KlineInterval>();
+            get => GetValue<TimeFramePreset>();
             set => SetValue(value);
         }
 
-        public KlineInterval HigherTimeFrame
-        {
-            get => GetValue<KlineInterval>();
-            set => SetValue(value);
-        }
 
 
 

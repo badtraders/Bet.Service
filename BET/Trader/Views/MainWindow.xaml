@@ -398,25 +398,47 @@
                             />
                 </StackPanel>
 
-                <!-- Price 24h: Min, Current, Max -->
+                <!-- Klines -->
                 <StackPanel Orientation="Vertical">
-                    <Label Content="Klines" />
                     <lvc:CartesianChart Series="{Binding AssetKlinesChartSeries}"  LegendLocation="None" Height="500" >
                         <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="Price"></lvc:Axis>
-                            <lvc:Axis MaxValue="{Binding AssetKlinesChartMaxVolume}" ShowLabels="False" Title="">
+                            <lvc:Axis Tag="Price" Position="RightTop"></lvc:Axis>
+                            <lvc:Axis MaxValue="{Binding AssetKlinesChartMaxVolume}" ShowLabels="False" LabelFormatter="{Binding AssetKlinesChartVolumeLabelFormatter}">
                                 <lvc:Axis.Separator>
-                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"/>
                                 </lvc:Axis.Separator>
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisY>
                         <lvc:CartesianChart.AxisX>
-                            <lvc:DateAxis Title="Date" Period="Hours" 
-                                          MinValue="{Binding AssetKlinesChartMinTime}" MaxValue="{Binding AssetKlinesChartMaxTime}">
+                            <lvc:Axis LabelFormatter="{Binding AssetKlinesChartTimeLabelFormatter}">
                                 <lvc:Axis.Separator>
-                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"/>
                                 </lvc:Axis.Separator>
-                            </lvc:DateAxis>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                    </lvc:CartesianChart>
+                </StackPanel>
+
+                <!-- Klines -->
+                <StackPanel Orientation="Vertical">
+                    <lvc:CartesianChart Series="{Binding AssetRatiosChartSeries}"  LegendLocation="None" Height="500" >
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Tag="OpenInterest" Position="RightTop">
+                                
+                            </lvc:Axis>
+                            <lvc:Axis Tag="Ratio" MinValue="0" MaxValue="5" >
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis LabelFormatter="{Binding AssetOpenInterestChartTimeLabelFormatter}">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+
                         </lvc:CartesianChart.AxisX>
                     </lvc:CartesianChart>
                 </StackPanel>

@@ -23,6 +23,7 @@ namespace Trader.Models
     public class GlobalLongShortAccountRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesLongShortRatio>> { }
     public class TopLongShortAccountRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesLongShortRatio>> { }
     public class TopLongShortPositionRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesLongShortRatio>> { }
+    public class TakerLongShortPositionRatioEvent : GenericMarketEvent<IEnumerable<BinanceFuturesBuySellVolumeRatio>> { }
 
     /// <summary>
     /// Asset Price changed: OnTrade => Price, OnOrderBookChanged => BestBid.Price
@@ -50,6 +51,7 @@ namespace Trader.Models
     /// openInterest
     /// </summary>
     public class OpenInterestEvent : GenericMarketEvent<BinanceFuturesOpenInterest> { }
+    public class OpenInterestHistoryEvent : GenericMarketEvent<IEnumerable<BinanceFuturesOpenInterestHistory>> { }
 
     public class MarkPriceEvent : GenericMarketEvent<BinanceFuturesStreamMarkPrice> { }
 

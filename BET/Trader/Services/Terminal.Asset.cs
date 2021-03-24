@@ -88,6 +88,7 @@ namespace Trader.Services
                     _eventAggregator.GetEvent<AggregatedTradeEvent>().Publish(eventData);
 
                 AssetLatestTradeData = eventData;
+                AssetLatestPrice = eventData.Price;
 
                 App.RunUI(() => AssetLatestTradesData.ReplaceOrAdd(
                     newItem: eventData,
@@ -121,7 +122,7 @@ namespace Trader.Services
                 AssetLatestDataUpdate = DateTime.UtcNow;
             });
 
-            await _socketClient.FuturesUsdt.SubscribeToKlineUpdatesAsync(symbol, TimeFrame, (eventData) =>
+            await _socketClient.FuturesUsdt.SubscribeToKlineUpdatesAsync(symbol, TimeFrame.KlineInterval, (eventData) =>
             {
                 if (!_playing)
                     return;
@@ -134,101 +135,110 @@ namespace Trader.Services
                 AssetKlinesData.ReplaceOrAdd(kline, (item) => item.OpenTime == kline.OpenTime);
                 AssetLatestDataUpdate = DateTime.UtcNow;
 
-            
+
 
             });
 
             /// Interval Tasks
 
-            // GetOpenInterest
-            RunTaskRegularly(() =>
-            {
-                var response = _apiClient.FuturesUsdt.Market.GetOpenInterest(symbol, _intervalTasksCancellationToken);
-                if (response.Success)
+            RunTasksRegularly(fiveMinutes,
+                onLoop: () =>
                 {
-                    if (OpenInterestEvent.Listened)
-                        _eventAggregator.GetEvent<OpenInterestEvent>().Publish(response.Data);
-
-                    AssetOpenInterestData = response.Data;
                     AssetLatestDataUpdate = DateTime.UtcNow;
-                }
-                else
+                },
+                onFail: () =>
                 {
-                    // TODO: notify data is old
-                }
-            }, fiveMinutes);
+                    // TODO: notify system has data loading failed
+                },
+                () =>
+                { // GetKlines
+                    var response = _apiClient.FuturesUsdt.Market.GetKlines(symbol, TimeFrame.KlineInterval, limit: DefaultLimit, ct: _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (KlinesEvent.Listened)
+                            _eventAggregator.GetEvent<KlinesEvent>().Publish(response.Data);
 
-            // GetKlines
-            RunTaskRegularly(() =>
-            {
-                var response = _apiClient.FuturesUsdt.Market.GetKlines(symbol, TimeFrame, limit: DefaultLimit, ct: _intervalTasksCancellationToken);
-                if (response.Success)
-                {
-                    if (KlinesEvent.Listened)
-                        _eventAggregator.GetEvent<KlinesEvent>().Publish(response.Data);
+                        AssetKlinesData.Clear();
+                        AssetKlinesData.AddRange(response.Data);
+                    }
+                    return response.Success;
+                },
+                () =>
+                { // GetOpenInterest
+                    var response = _apiClient.FuturesUsdt.Market.GetOpenInterest(symbol, _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (OpenInterestEvent.Listened)
+                            _eventAggregator.GetEvent<OpenInterestEvent>().Publish(response.Data);
 
-                    AssetKlinesData.Clear();
-                    AssetKlinesData.AddRange(response.Data);
-                    AssetLatestDataUpdate = DateTime.UtcNow;
+                        AssetOpenInterestData = response.Data;
+                    }
+                    return response.Success;
+                },
+                () =>
+                { // GetOpenInterestHistory
+                    var response = _apiClient.FuturesUsdt.Market.GetOpenInterestHistory(symbol, TimeFrame.AsPeriodInterval, limit: DefaultLimit, startTime: null, endTime: null, _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (OpenInterestHistoryEvent.Listened)
+                            _eventAggregator.GetEvent<OpenInterestHistoryEvent>().Publish(response.Data);
 
-                  
-                }
-                else
-                {
-                    // TODO: notify data is old
-                }
-            }, fiveMinutes);
+                        AssetOpenInterestHistoryData = response.Data;
+                    }
+                    return response.Success;
+                },
+                () =>
+                { // GetGlobalLongShortAccountRatio
+                    var response = _apiClient.FuturesUsdt.Market.GetGlobalLongShortAccountRatio(symbol, TimeFrame.AsPeriodInterval, limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (GlobalLongShortAccountRatioEvent.Listened)
+                            _eventAggregator.GetEvent<GlobalLongShortAccountRatioEvent>().Publish(response.Data);
 
-            // Long Short Ratios
-            RunTaskRegularly(() =>
-            {
-                var response = _apiClient.FuturesUsdt.Market.GetGlobalLongShortAccountRatio(symbol, KlineIntervalToPeriodInterval(TimeFrame), limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
-                if (response.Success)
-                {
-                    if (GlobalLongShortAccountRatioEvent.Listened)
-                        _eventAggregator.GetEvent<GlobalLongShortAccountRatioEvent>().Publish(response.Data);
+                        GlobalLongShortAccountRatioHistoryData = response.Data;
+                    }
+                    return response.Success;
+                },
+                () =>
+                { // GetTopLongShortAccountRatio
+                    var response = _apiClient.FuturesUsdt.Market.GetTopLongShortAccountRatio(symbol, TimeFrame.AsPeriodInterval, limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (TopLongShortAccountRatioEvent.Listened)
+                            _eventAggregator.GetEvent<TopLongShortAccountRatioEvent>().Publish(response.Data);
 
-                    GlobalLongShortAccountRatioHistoryData = response.Data;
-                }
-                else
-                {
-                    // TODO: notify data is old
-                }
+                        TopLongShortAccountRatioHistoryData = response.Data;
+                    }
+                    return response.Success;
+                },
+                () =>
+                { // GetTopLongShortPositionRatio
+                    var response = _apiClient.FuturesUsdt.Market.GetTopLongShortPositionRatio(symbol, TimeFrame.AsPeriodInterval, limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (TopLongShortPositionRatioEvent.Listened)
+                            _eventAggregator.GetEvent<TopLongShortPositionRatioEvent>().Publish(response.Data);
 
-                var response2 = _apiClient.FuturesUsdt.Market.GetTopLongShortAccountRatio(symbol, KlineIntervalToPeriodInterval(TimeFrame), limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
-                if (response2.Success)
-                {
-                    if (TopLongShortAccountRatioEvent.Listened)
-                        _eventAggregator.GetEvent<TopLongShortAccountRatioEvent>().Publish(response2.Data);
+                        TopLongShortPositionRatioHistoryData = response.Data;
+                    }
+                    return response.Success;
+                },
+                () =>
+                { // GetTakerBuySellVolumeRatio
+                    var response = _apiClient.FuturesUsdt.Market.GetTakerBuySellVolumeRatio(symbol, TimeFrame.AsPeriodInterval, limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
+                    if (response.Success)
+                    {
+                        if (TakerLongShortPositionRatioEvent.Listened)
+                            _eventAggregator.GetEvent<TakerLongShortPositionRatioEvent>().Publish(response.Data);
 
-                    TopLongShortAccountRatioHistoryData = response2.Data;
-                }
-                else
-                {
-                    // TODO: notify data is old
-                }
+                        TakerLongShortPositionRatioHistoryData = response.Data;
+                    }
+                    return response.Success;
+                });
 
-                var response3 = _apiClient.FuturesUsdt.Market.GetTopLongShortPositionRatio(symbol, KlineIntervalToPeriodInterval(TimeFrame), limit: DefaultLimit, startTime: null, endTime: null, ct: _intervalTasksCancellationToken);
-                if (response3.Success)
-                {
-                    if (TopLongShortPositionRatioEvent.Listened)
-                        _eventAggregator.GetEvent<TopLongShortPositionRatioEvent>().Publish(response3.Data);
-
-                    TopLongShortPositionRatioHistoryData = response3.Data;
-                }
-                else
-                {
-                    // TODO: notify data is old
-                }
-
-
-                AssetLatestDataUpdate = DateTime.UtcNow;
-            }, fiveMinutes);
 
 
         }
-
-
         private async Task StopInternalAssetArea()
         {
             await AssetOrderBook.StopAsync();
@@ -263,40 +273,32 @@ namespace Trader.Services
         public IBinanceTick AssetTickerData
         {
             get => GetValue<IBinanceTick>();
-            private set
-            {
-                SetValue(value);
-                AssetLatestDataUpdate = DateTime.UtcNow;
-            }
+            private set => SetValue(value);
+
         }
 
         public BinanceStreamAggregatedTrade AssetLatestTradeData
         {
             get => GetValue<BinanceStreamAggregatedTrade>();
-            private set
-            {
-                if (SetValue(value))
-                {
-                    AssetLatestDataUpdate = DateTime.UtcNow;
-                    AssetLatestPrice = value.Price;
-                }
-            }
+            private set => SetValue(value);
         }
 
         public BinanceFuturesOpenInterest AssetOpenInterestData
         {
             get => GetValue<BinanceFuturesOpenInterest>();
-            private set
-            {
-                if (SetValue(value))
-                    AssetLatestDataUpdate = DateTime.UtcNow;
-            }
+            private set => SetValue(value);
+        }
+
+        public IEnumerable<BinanceFuturesOpenInterestHistory> AssetOpenInterestHistoryData
+        {
+            get => GetValue<IEnumerable<BinanceFuturesOpenInterestHistory>>();
+            private set => SetValue(value);
         }
         public ObservableCollectionExtension<IBinanceAggregatedTrade> AssetLatestTradesData { get; } = new ObservableCollectionExtension<IBinanceAggregatedTrade>(ObservableCollectionExtensionType.Reversed, 20);
         public ObservableCollectionExtension<BinanceFuturesStreamLiquidation> AssetLiquidationsData { get; } = new ObservableCollectionExtension<BinanceFuturesStreamLiquidation>(ObservableCollectionExtensionType.Reversed, 100);
 
         public ObservableCollectionExtension<IBinanceKline> AssetKlinesData { get; } = new ObservableCollectionExtension<IBinanceKline>(ObservableCollectionExtensionType.List);
-        
+
         public IEnumerable<BinanceFuturesLongShortRatio> GlobalLongShortAccountRatioHistoryData
         {
             get => GetValue<IEnumerable<BinanceFuturesLongShortRatio>>();
@@ -342,6 +344,22 @@ namespace Trader.Services
         public BinanceFuturesLongShortRatio TopLongShortPositionRatioLatestData
         {
             get => GetValue<BinanceFuturesLongShortRatio>();
+            private set => SetValue(value);
+        }
+
+        public IEnumerable<BinanceFuturesBuySellVolumeRatio> TakerLongShortPositionRatioHistoryData
+        {
+            get => GetValue<IEnumerable<BinanceFuturesBuySellVolumeRatio>>();
+            private set
+            {
+                if (SetValue(value))
+                    TakerLongShortPositionRatioLatesData = value.LastOrDefault();
+            }
+        }
+
+        public BinanceFuturesBuySellVolumeRatio TakerLongShortPositionRatioLatesData
+        {
+            get => GetValue<BinanceFuturesBuySellVolumeRatio>();
             private set => SetValue(value);
         }
     }
