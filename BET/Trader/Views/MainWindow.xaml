@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+        xmlns:sys="clr-namespace:System;assembly=System.Core"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"  xmlns:extensions="clr-namespace:Trader.Extensions" xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         prism:ViewModelLocator.AutoWireViewModel="True"
@@ -400,21 +401,22 @@
                 <!-- Price 24h: Min, Current, Max -->
                 <StackPanel Orientation="Vertical">
                     <Label Content="Klines" />
-                    <lvc:CartesianChart Series="{Binding KlinesChartSeries}"  LegendLocation="None" Height="500" >
+                    <lvc:CartesianChart Series="{Binding AssetKlinesChartSeries}"  LegendLocation="None" Height="500" >
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="Price"></lvc:Axis>
-                            <lvc:Axis MaxValue="{Binding KlinesChartMaxVolume}" ShowLabels="False" Title="">
+                            <lvc:Axis MaxValue="{Binding AssetKlinesChartMaxVolume}" ShowLabels="False" Title="">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
                                 </lvc:Axis.Separator>
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisY>
                         <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="Date" >
+                            <lvc:DateAxis Title="Date" Period="Hours" 
+                                          MinValue="{Binding AssetKlinesChartMinTime}" MaxValue="{Binding AssetKlinesChartMaxTime}">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator Style="{StaticResource CleanSeparatorStyle}"></lvc:Separator>
                                 </lvc:Axis.Separator>
-                            </lvc:Axis>
+                            </lvc:DateAxis>
                         </lvc:CartesianChart.AxisX>
                     </lvc:CartesianChart>
                 </StackPanel>

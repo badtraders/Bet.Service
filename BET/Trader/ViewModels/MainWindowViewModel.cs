@@ -75,20 +75,20 @@ namespace Trader.ViewModels
         private void InitCharts()
         {
             var klinePriceMapper = Mappers.Financial<IBinanceKline>()
-                 .X((value, index) => index)
+                 .X((value, index) => value.OpenTime.Ticks)
                  .Open(value => (double)value.Open)
                  .High(value => (double)value.High)
                  .Low(value => (double)value.Low)
                  .Close(value => (double)value.Close);
 
             var klineBuyVolumeMapper = Mappers.Xy<IBinanceKline>()
-                 .X((value, index) => index)
+                 .X((value, index) => value.OpenTime.Ticks)
                  .Y(value => (double)value.TakerBuyBaseVolume);
             var klineSellVolumeMapper = Mappers.Xy<IBinanceKline>()
-                .X((value, index) => index)
+                .X((value, index) => value.OpenTime.Ticks)
                 .Y(value => (double)(value.BaseVolume - value.TakerBuyBaseVolume));
 
-            KlinesChartSeries = new SeriesCollection
+            AssetKlinesChartSeries = new SeriesCollection
             {
                 new StackedColumnSeries(klineSellVolumeMapper)
                 {
@@ -127,15 +127,23 @@ namespace Trader.ViewModels
                     AssetKlinesData.Clear();
                     AssetKlinesData.AddRange(klines);
 
-                    KlinesChartMaxVolume = klines.Select(i => i.BaseVolume).Max() * 5;
+                    AssetKlinesChartMaxVolume = klines.Select(i => i.BaseVolume).Max() * 5;
+                    AssetKlinesChartMinTime = klines.Select(i => i.OpenTime).Min();
+                    AssetKlinesChartMaxTime = klines.Select(i => i.OpenTime).Max().AddMinutes(5);
                 }
+
+             
+
             });
         }
 
         public ChartValues<IBinanceKline> AssetKlinesData { get; } = new();
-        public SeriesCollection KlinesChartSeries { get => GetValue<SeriesCollection>(); private set => SetValue(value); }
-        public decimal KlinesChartMaxVolume { get => GetValue<decimal>(); private set => SetValue(value); }
+        public SeriesCollection AssetKlinesChartSeries { get => GetValue<SeriesCollection>(); private set => SetValue(value); }
+        public DateTime AssetKlinesChartMinTime { get => GetValue<DateTime>(); private set => SetValue(value); }
+        public DateTime AssetKlinesChartMaxTime { get => GetValue<DateTime>(); private set => SetValue(value); }
+        public decimal AssetKlinesChartMaxVolume { get => GetValue<decimal>(); private set => SetValue(value); }
 
+        public Func<double, string> AssetKlinesChartTimeLabelFormatter => (time) => new DateTime((long)time).ToShortTimeString();
 
         #endregion
 
